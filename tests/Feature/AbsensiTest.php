@@ -6,12 +6,20 @@ use App\Models\Absensi;
 use App\Models\Guru;
 use App\Models\Kelas;
 use App\Models\Siswa;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class AbsensiTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $admin = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($admin);
+    }
 
     public function test_attendance_grid_can_record_and_update_student_presence(): void
     {

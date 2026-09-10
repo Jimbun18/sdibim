@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Guru;
 use App\Models\Kelas;
 use App\Models\Siswa;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -12,6 +13,13 @@ use Tests\TestCase;
 class MasterDataControllerTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $admin = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($admin);
+    }
 
     public function test_guru_resource_crud_and_validation(): void
     {

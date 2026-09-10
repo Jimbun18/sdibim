@@ -6,12 +6,20 @@ use App\Models\Guru;
 use App\Models\Kelas;
 use App\Models\KeuanganSpp;
 use App\Models\Siswa;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class KeuanganSppTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $admin = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($admin);
+    }
 
     public function test_bulk_generate_spp_creates_bills_for_all_active_students(): void
     {

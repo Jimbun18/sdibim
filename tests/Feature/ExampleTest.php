@@ -14,6 +14,7 @@ class ExampleTest extends TestCase
     {
         $response = $this->get('/');
 
-        $response->assertRedirect(route('siswa.index'));
+        $response->assertStatus(200);
+        $response->assertSee('SDI Bina Insan Mandiri');
     }
 }
