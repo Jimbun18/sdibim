@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\AkademikController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\KeuanganSppController;
+use App\Http\Controllers\MapelController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SiswaController;
 use Illuminate\Support\Facades\Route;
@@ -14,24 +16,26 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-// Dashboard: Setelah login, arahkan ke Data Siswa (atau ringkasan SIM-SDI)
-Route::get('/dashboard', function () {
-    return redirect()->route('siswa.index');
-})->middleware(['auth'])->name('dashboard');
+// Modul 1: Dashboard SIM-SDI
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth'])
+    ->name('dashboard');
 
 // Modul-modul Terproteksi Autentikasi (SIM-SDI)
 Route::middleware(['auth'])->group(function () {
-    // Modul 2, 3, 4: Master Data (Guru, Kelas, Siswa)
+    // Modul 2, 3, 4, 8: Master Data (Guru, Kelas, Siswa, Mapel)
     Route::prefix('master')->group(function () {
         Route::resource('guru', GuruController::class);
         Route::resource('kelas', KelasController::class)->parameters(['kelas' => 'kelas']);
         Route::resource('siswa', SiswaController::class);
+        Route::resource('mapel', MapelController::class);
     });
 
     // Shortcut routes master data
     Route::resource('guru', GuruController::class);
     Route::resource('kelas', KelasController::class)->parameters(['kelas' => 'kelas']);
     Route::resource('siswa', SiswaController::class);
+    Route::resource('mapel', MapelController::class);
 
     // Modul 5: Keuangan SPP (Generate Massal, Antarmuka Kasir, Pelunasan, Kuitansi)
     Route::prefix('keuangan')->name('keuangan.')->group(function () {
@@ -49,17 +53,17 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/rekap', [AbsensiController::class, 'rekap'])->name('rekap');
     });
 
-    // Modul 7: Akademik (e-Rapor Input Nilai Siswa) - Hak Akses Khusus Guru & Admin
-    Route::middleware(['role:guru,admin'])->prefix('akademik')->name('akademik.')->group(function () {
-        Route::get('nilai', [AkademikController::class, 'index'])->name('index');
-        Route::get('/', [AkademikController::class, 'index']);
-        Route::post('nilai', [AkademikController::class, 'store'])->name('store');
-    });
-
     // Profil Akun Breeze
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+// Modul 7: Akademik (e-Rapor Input Nilai Siswa) - Hak Akses Khusus Guru & Admin
+Route::middleware(['role:guru,admin'])->prefix('akademik')->name('akademik.')->group(function () {
+    Route::get('nilai', [AkademikController::class, 'index'])->name('index');
+    Route::get('/', [AkademikController::class, 'index']);
+    Route::post('nilai', [AkademikController::class, 'store'])->name('store');
 });
 
 // Autentikasi Breeze (/login, /logout, dll)

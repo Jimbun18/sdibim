@@ -5,12 +5,20 @@ namespace Tests\Feature;
 use App\Models\Guru;
 use App\Models\Kelas;
 use App\Models\Siswa;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class SiswaViewTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $admin = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($admin);
+    }
 
     public function test_siswa_index_view_renders_successfully(): void
     {

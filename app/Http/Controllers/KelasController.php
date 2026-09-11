@@ -6,6 +6,7 @@ use App\Http\Requests\StoreKelasRequest;
 use App\Http\Requests\UpdateKelasRequest;
 use App\Models\Guru;
 use App\Models\Kelas;
+use App\Models\Siswa;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -30,7 +31,14 @@ class KelasController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('master.kelas.index', compact('kelas', 'tingkat', 'search'));
+        $stats = [
+            'total_kelas' => Kelas::count(),
+            'total_siswa' => Siswa::count(),
+            'kelas_dengan_wali' => Kelas::whereNotNull('wali_kelas_id')->count(),
+            'kelas_tanpa_wali' => Kelas::whereNull('wali_kelas_id')->count(),
+        ];
+
+        return view('master.kelas.index', compact('kelas', 'tingkat', 'search', 'stats'));
     }
 
     /**

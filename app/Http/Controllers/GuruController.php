@@ -29,7 +29,13 @@ class GuruController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('master.guru.index', compact('gurus', 'search'));
+        $stats = [
+            'total' => Guru::count(),
+            'wali_kelas' => Guru::whereHas('kelasWali')->count(),
+            'pengampu_mapel' => Guru::whereHas('mapels')->count(),
+        ];
+
+        return view('master.guru.index', compact('gurus', 'search', 'stats'));
     }
 
     /**
